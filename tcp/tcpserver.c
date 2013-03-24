@@ -12,6 +12,7 @@ char *sa_tostring(struct sockaddr *sa, char *buf) {
         return buf;
     }
 
+    /* note that inet_ntoa() is not thread safe */
     struct sockaddr_in *sin = (struct sockaddr_in *) sa;
     sprintf(buf, "%s:%d",
             inet_ntoa(sin->sin_addr),
@@ -65,9 +66,16 @@ void handle_incoming(int sock) {
         return;
     }
 
-    char buf[256];
-    printf("connected with %s\n",
-           sa_tostring((struct sockaddr *) &remote_addr, buf));
+    char addr_s[64];
+    sa_tostring((struct sockaddr *) &remote_addr, addr_s);
+    printf("connected with %s\n", addr_s);
+
+    char data[256];
+    sprintf(data, "Hello %s\n", addr_s);
+    ssize_t nr_sent = send(csock, data, strlen(data), 0);
+    if (nr_sent != strlen(data)) {
+        printf("failed to send all bytes: %d\n", nr_sent);
+    }
 
     close(csock);
 }
