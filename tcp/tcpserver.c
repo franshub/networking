@@ -4,6 +4,20 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+
+char *sa_tostring(struct sockaddr *sa, char *buf) {
+    if (sa->sa_family != AF_INET) {
+        sprintf(buf, "unknown address family %d", sa->sa_family);
+        return buf;
+    }
+
+    struct sockaddr_in *sin = (struct sockaddr_in *) sa;
+    sprintf(buf, "%s:%d",
+            inet_ntoa(sin->sin_addr),
+            ntohs(sin->sin_port));
+    return buf;
+}
 
 /**
  * Creates a socket and binds it to the specified port.
@@ -51,7 +65,9 @@ void handle_incoming(int sock) {
         return;
     }
 
-    printf("accept() returned success!\n");
+    char buf[256];
+    printf("connected with %s\n",
+           sa_tostring((struct sockaddr *) &remote_addr, buf));
 
     close(csock);
 }
