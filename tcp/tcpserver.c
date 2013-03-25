@@ -1,6 +1,7 @@
 /* tcpserver.c */
 
 #include <stdio.h>
+#include <ctype.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -70,11 +71,32 @@ void handle_incoming(int sock) {
     sa_tostring((struct sockaddr *) &remote_addr, addr_s);
     printf("connected with %s\n", addr_s);
 
+    printf("sending greeting to peer...\n");
     char data[256];
     sprintf(data, "Hello %s\n", addr_s);
     ssize_t nr_sent = send(csock, data, strlen(data), 0);
     if (nr_sent != strlen(data)) {
         printf("failed to send all bytes: %d\n", nr_sent);
+    }
+
+    printf("waiting for data from peer...\n");
+    ssize_t nr_recv = recv(csock, data, sizeof(data), 0);
+    if (nr_recv < 0) {
+        printf("recv() failed\n");
+    } else if (nr_recv == 0) {
+        printf("connection was closed by peer\n");
+    } else {
+        printf("received %d bytes: '", nr_recv);
+        int i;
+        for (i = 0; i < nr_recv; i++) {
+            if (isprint(data[i])) {
+                putchar(data[i]);
+            } else {
+                printf("\\x%02.2x", data[i]);
+            }
+        }
+        putchar('\'');
+        putchar('\n');
     }
 
     close(csock);
