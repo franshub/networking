@@ -103,7 +103,12 @@ void handle_incoming(int sock) {
 }
 
 int main(int argc, char *argv[]) {
-    uint16_t port = 5000;
+    if (argc < 2) {
+        printf("expected a port number\n");
+        return 0;
+    }
+
+    uint16_t port = (uint16_t) atoi(argv[1]);
     int sock = create_socket(port);
 
     handle_incoming(sock);
