@@ -71,7 +71,7 @@ void handle_incoming(int sock) {
     sa_tostring((struct sockaddr *) &remote_addr, addr_s);
     printf("connected with %s\n", addr_s);
 
-    printf("sending greeting to peer...\n");
+    printf("sending greeting to client...\n");
     char data[256];
     sprintf(data, "Hello %s\n", addr_s);
     ssize_t nr_sent = send(csock, data, strlen(data), 0);
@@ -79,12 +79,12 @@ void handle_incoming(int sock) {
         printf("failed to send all bytes: %d\n", nr_sent);
     }
 
-    printf("waiting for data from peer...\n");
+    printf("waiting for data...\n");
     ssize_t nr_recv = recv(csock, data, sizeof(data), 0);
     if (nr_recv < 0) {
         printf("recv() failed\n");
     } else if (nr_recv == 0) {
-        printf("connection was closed by peer\n");
+        printf("connection was closed by client\n");
     } else {
         printf("received %d bytes: '", nr_recv);
         int i;
