@@ -63,7 +63,6 @@ void handle_incoming(int sock) {
     int csock = accept(sock, (struct sockaddr *) &remote_addr, &remote_size);
     if (csock < 0) {
         printf("accept() failed\n");
-        close(sock);
         return;
     }
 
