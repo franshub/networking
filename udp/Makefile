@@ -1,4 +1,5 @@
-all: udpserver udpclient
+all: udpserver udpclient udpinteractive
 
 udpserver: udpserver.c
 udpclient: udpclient.c
+udpinteractive: udpinteractive.c
