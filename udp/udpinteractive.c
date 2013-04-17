@@ -111,7 +111,7 @@ void *do_receive(void *arg) {
 
 void do_send(struct control_s *cs) {
     pthread_mutex_lock(&cs->mutex);
-    printf("Type bytes as two character hexadecimal values.\n");
+    printf("Type bytes as one or two character hexadecimal values.\n");
     printf("Separate bytes by a space.\n");
     printf("Press <enter> to send.\n");
     printf("Type stop<enter> to quit.\n");
