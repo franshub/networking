@@ -96,7 +96,7 @@ void *do_receive(void *arg) {
         pthread_mutex_lock(&cs->mutex);
         memcpy(&cs->addr, &remote_addr, sizeof(remote_addr));
         cs->has_addr = 1;
-        printf("received %d %s: '", nr_recv, (nr_recv == 1 ? "byte" : "bytes"));
+        printf("received %d %s: ", nr_recv, (nr_recv == 1 ? "byte" : "bytes"));
         int i;
         for (i = 0; i < nr_recv; i++) {
             if (i > 0) {
@@ -104,7 +104,6 @@ void *do_receive(void *arg) {
             }
             printf("%02.2x", buf[i]);
         }
-        putchar('\'');
         putchar('\n');
         pthread_mutex_unlock(&cs->mutex);
     }
