@@ -134,7 +134,7 @@ void do_send(struct control_s *cs) {
             }
             if (isalpha(*cp)) {
                 value <<= 4;
-                value |= tolower(*cp) - 'a';
+                value |= tolower(*cp) - 'a' + 10;
                 continue;
             }
             if (!isspace(*cp)) {
