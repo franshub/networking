@@ -76,7 +76,7 @@ void *do_receive(void *arg) {
     printf("receiving from socket %d\n", cs->sock);
     pthread_mutex_unlock(&cs->mutex);
 
-    char buf[256];
+    unsigned char buf[256];
     struct sockaddr_in remote_addr;
 
     while (!cs->stop_recv) {
@@ -117,14 +117,14 @@ void do_send(struct control_s *cs) {
     printf("Type stop<enter> to quit.\n");
     pthread_mutex_unlock(&cs->mutex);
 
-    char buf[256];
+    unsigned char buf[256];
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         if (memcmp(buf, "stop", 4) == 0) {
             break;
         }
         int nr_bytes = 0;
-        char *cp;
-        char value = 0;
+        unsigned char *cp;
+        unsigned char value = 0;
         for (cp = buf; *cp != '\0'; cp++) {
             if (isdigit(*cp)) {
                 value <<= 4;
