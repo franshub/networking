@@ -160,7 +160,7 @@ void do_send(struct control_s *cs) {
                                          (struct sockaddr *) &cs->addr,
                                          sizeof(cs->addr));
                 pthread_mutex_lock(&cs->mutex);
-                printf("sent %d bytes\n", nr_sent);
+                printf("sent %d %s", nr_sent, (nr_sent == 1 ? "byte" : "bytes"));
                 pthread_mutex_unlock(&cs->mutex);
             }
             break;
