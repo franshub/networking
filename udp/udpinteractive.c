@@ -1,6 +1,6 @@
-/* udpclienti.c */
+/* udpinteractive.c */
 
-/* interactive UDP client */
+/* interactive UDP server or client */
 
 #include <stdlib.h>
 #include <stdio.h>
