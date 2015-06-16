@@ -51,6 +51,7 @@ void *do_receive(void *arg) {
         pthread_mutex_lock(&cs->mutex);
         printf("connect() failed\n");
         pthread_mutex_unlock(&cs->mutex);
+        cs->stop_recv = 1;
         return;
     }
 
