@@ -85,16 +85,12 @@ void handle_incoming(int sock) {
     } else if (nr_recv == 0) {
         printf("connection was closed by client\n");
     } else {
-        printf("received %d bytes: '", nr_recv);
+        printf("received %d bytes:", nr_recv);
         int i;
         for (i = 0; i < nr_recv; i++) {
-            if (isprint(data[i])) {
-                putchar(data[i]);
-            } else {
-                printf("\\x%02.2x", data[i]);
-            }
+            printf(" %02.2x", data[i]);
         }
-        putchar('\'');
+        putchar('\n');
         putchar('\n');
     }
 
