@@ -6,6 +6,8 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 char *sa_tostring(struct sockaddr *sa, char *buf) {
     if (sa->sa_family != AF_INET) {
@@ -55,7 +57,7 @@ void handle_incoming(int sock) {
     printf("waiting for incoming udp message...\n");
     char buf[MAX_MESSAGE_SIZE];
     struct sockaddr_in remote_addr;
-    int remote_size = sizeof(remote_addr);
+    socklen_t remote_size = (socklen_t) sizeof(remote_addr);
     int nr_recv = recvfrom(sock, buf, sizeof(buf), 0,
                            (struct sockaddr *) &remote_addr,
                            &remote_size);
@@ -84,7 +86,7 @@ void handle_incoming(int sock) {
                              (struct sockaddr *) &remote_addr,
                              remote_size);
     if (nr_sent != strlen(reply)) {
-        printf("failed to send all bytes: %d\n", nr_sent);
+        printf("failed to send all bytes: %ld\n", (long) nr_sent);
     }
 
     printf("ready\n");

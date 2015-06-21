@@ -1,10 +1,13 @@
 /* tcpclient.c */
 
+#include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -48,7 +51,7 @@ int main(int argc, char *argv[]) {
     } else if (nr_recv == 0) {
         printf("connection was closed by server\n");
     } else {
-        printf("received %d bytes: '", nr_recv);
+        printf("received %ld bytes: '", (long) nr_recv);
         int i;
         for (i = 0; i < nr_recv; i++) {
             if (isprint(data[i])) {
@@ -65,7 +68,7 @@ int main(int argc, char *argv[]) {
     sprintf(data, "Hi there\n");
     ssize_t nr_sent = send(sock, data, strlen(data), 0);
     if (nr_sent != strlen(data)) {
-        printf("failed to send all bytes: %d\n", nr_sent);
+        printf("failed to send all bytes: %ld\n", (long) nr_sent);
     }
 
     close(sock);

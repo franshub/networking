@@ -1,2 +1,8 @@
 *~
 *.exe
+tcpserver
+tcpclient
+tcpinteractive
+udpserver
+udpclient
+udpinteractive

@@ -1,11 +1,13 @@
 /* tcpserver.c */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 char *sa_tostring(struct sockaddr *sa, char *buf) {
     if (sa->sa_family != AF_INET) {
@@ -75,7 +77,7 @@ void handle_incoming(int sock) {
     sprintf(data, "Hello %s\n", addr_s);
     ssize_t nr_sent = send(csock, data, strlen(data), 0);
     if (nr_sent != strlen(data)) {
-        printf("failed to send all bytes: %d\n", nr_sent);
+        printf("failed to send all bytes: %ld\n", (long) nr_sent);
     }
 
     printf("waiting for data...\n");
@@ -85,7 +87,7 @@ void handle_incoming(int sock) {
     } else if (nr_recv == 0) {
         printf("connection was closed by client\n");
     } else {
-        printf("received %d bytes:", nr_recv);
+        printf("received %ld bytes: '", (long) nr_recv);
         int i;
         for (i = 0; i < nr_recv; i++) {
             printf(" %02.2x", data[i]);

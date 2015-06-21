@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 struct control_s {
     int sock;
@@ -80,7 +82,7 @@ void *do_receive(void *arg) {
     struct sockaddr_in remote_addr;
 
     while (!cs->stop_recv) {
-        int remote_size = sizeof(remote_addr);
+        socklen_t remote_size = (socklen_t) sizeof(remote_addr);
         int nr_recv = recvfrom(cs->sock, buf, sizeof(buf), 0,
                                (struct sockaddr *) &remote_addr,
                                &remote_size);
@@ -90,7 +92,7 @@ void *do_receive(void *arg) {
                 printf("recvfrom() failed\n");
                 pthread_mutex_unlock(&cs->mutex);
             }
-            return;
+            return NULL;
         }
 
         pthread_mutex_lock(&cs->mutex);
@@ -107,6 +109,8 @@ void *do_receive(void *arg) {
         putchar('\n');
         pthread_mutex_unlock(&cs->mutex);
     }
+
+    return NULL;
 }
 
 void do_send(struct control_s *cs) {
@@ -117,13 +121,13 @@ void do_send(struct control_s *cs) {
     printf("Type stop<enter> to quit.\n");
     pthread_mutex_unlock(&cs->mutex);
 
-    unsigned char buf[256];
+    char buf[256];
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         if (memcmp(buf, "stop", 4) == 0) {
             break;
         }
         int nr_bytes = 0;
-        unsigned char *cp;
+        char *cp;
         unsigned char value = 0;
         for (cp = buf; *cp != '\0'; cp++) {
             if (isdigit(*cp)) {
@@ -140,7 +144,7 @@ void do_send(struct control_s *cs) {
                 continue;
             }
             if (cp > buf) {
-                buf[nr_bytes] = value;
+                buf[nr_bytes] = ((int) value) & 0xff;
                 value = 0;
                 nr_bytes++;
             }
@@ -159,7 +163,7 @@ void do_send(struct control_s *cs) {
                                          (struct sockaddr *) &cs->addr,
                                          sizeof(cs->addr));
                 pthread_mutex_lock(&cs->mutex);
-                printf("sent %d %s\n", nr_sent, (nr_sent == 1 ? "byte" : "bytes"));
+                printf("sent %ld %s\n", (long) nr_sent, (nr_sent == 1 ? "byte" : "bytes"));
                 pthread_mutex_unlock(&cs->mutex);
             }
             break;

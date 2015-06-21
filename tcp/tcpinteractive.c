@@ -9,6 +9,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <pthread.h>
+#include <arpa/inet.h>
+#include <unistd.h>
 
 struct control_s {
     int sock;
@@ -52,7 +54,7 @@ void *do_receive(void *arg) {
         printf("connect() failed\n");
         pthread_mutex_unlock(&cs->mutex);
         cs->stop_recv = 1;
-        return;
+        return NULL;
     }
 
     while (!cs->stop_recv) {
@@ -67,18 +69,18 @@ void *do_receive(void *arg) {
             printf("recv() failed\n");
             pthread_mutex_unlock(&cs->mutex);
             cs->stop_recv = 1;
-            return;
+            return NULL;
         }
         if (nr_recv == 0) {
             pthread_mutex_lock(&cs->mutex);
             printf("connection was closed by server\n");
             pthread_mutex_unlock(&cs->mutex);
             cs->stop_recv = 1;
-            return;
+            return NULL;
         }
 
         pthread_mutex_lock(&cs->mutex);
-        printf("received %d bytes:", nr_recv);
+        printf("received %ld bytes:", (long) nr_recv);
         int i;
         for (i = 0; i < nr_recv; i++) {
             printf(" %02.2x", data[i]);
@@ -86,6 +88,8 @@ void *do_receive(void *arg) {
         putchar('\n');
         pthread_mutex_unlock(&cs->mutex);
     }
+
+    return NULL;
 }
 
 void do_send(struct control_s *cs) {
@@ -96,7 +100,7 @@ void do_send(struct control_s *cs) {
     printf("Type stop<enter> to quit.\n");
     pthread_mutex_unlock(&cs->mutex);
 
-    unsigned char buf[256];
+    char buf[256];
     while (fgets(buf, sizeof(buf), stdin) != NULL) {
         if (cs->stop_recv) {
             break;
@@ -105,7 +109,7 @@ void do_send(struct control_s *cs) {
             break;
         }
         int nr_bytes = 0;
-        unsigned char *cp;
+        char *cp;
         unsigned char value = 0;
         for (cp = buf; *cp != '\0'; cp++) {
             if (isdigit(*cp)) {
@@ -122,7 +126,7 @@ void do_send(struct control_s *cs) {
                 continue;
             }
             if (cp > buf) {
-                buf[nr_bytes] = value;
+                buf[nr_bytes] = ((int) value) & 0xff;
                 value = 0;
                 nr_bytes++;
             }
@@ -134,7 +138,7 @@ void do_send(struct control_s *cs) {
             }
             ssize_t nr_sent = send(cs->sock, buf, nr_bytes, 0);
             pthread_mutex_lock(&cs->mutex);
-            printf("sent %d %s\n", nr_sent, (nr_sent == 1 ? "byte" : "bytes"));
+            printf("sent %ld %s\n", (long) nr_sent, (nr_sent == 1 ? "byte" : "bytes"));
             pthread_mutex_unlock(&cs->mutex);
             break;
         }
