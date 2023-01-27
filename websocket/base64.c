@@ -128,7 +128,7 @@ static int decode_chunk(char *chunk, unsigned char *decoded) {
     decoded[0] = (buffer >> 16) & 0xff;
     decoded[1] = (buffer >> 8) & 0xff;
     decoded[2] = buffer & 0xff;
-        
+
     return 1;
 }
 
@@ -168,7 +168,7 @@ static int decode_padded_chunk(char *chunk, unsigned char *decoded) {
     if (i >= 2) {
         decoded[2] = buffer & 0xff;
     }
-        
+
     return 1;
 }
 
