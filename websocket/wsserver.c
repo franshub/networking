@@ -487,6 +487,6 @@ int main(int argc, char *argv[]) {
  *
  * The Sec-WebSocket-Accept value must be the base64-encoded SHA-1 of
  * the concatenation of the Sec-WebSocket-Key (as a string, not
- * base64-decoded) with the string "258EAFA5-
- * E914-47DA-95CA-C5AB0DC85B11".
+ * base64-decoded) with the string
+ * "258EAFA5-E914-47DA-95CA-C5AB0DC85B11".
  */
